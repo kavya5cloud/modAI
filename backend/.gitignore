@@ -1,0 +1,29 @@
+# dependencies
+/node_modules
+
+# next.js build output
+/.next
+/out
+*.tsbuildinfo
+
+# production build
+/build
+
+# env files (never commit real secrets)
+.env
+.env*.local
+.env.local
+
+# logs / debug
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# misc
+.DS_Store
+*.pem
+
+# local storage / uploads
+/uploads
+/.uploads

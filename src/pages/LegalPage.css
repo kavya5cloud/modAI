@@ -1,0 +1,208 @@
+/* ─────────────────────────────────────────────
+   Legal Pages (Terms, Privacy, Cookies)
+   ───────────────────────────────────────────── */
+.legal-screen {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%, rgba(37, 99, 235, 0.14), transparent 50%),
+    var(--bg-base);
+  padding: 2rem 1rem 4rem;
+}
+
+.legal-container {
+  max-width: 740px;
+  margin: 0 auto;
+}
+
+.legal-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-hover);
+  transition: color 140ms, border-color 140ms;
+  margin-bottom: 2rem;
+}
+
+.legal-back:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+/* Header */
+.legal-header {
+  margin-bottom: 2.5rem;
+}
+
+.legal-logo-mark {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.legal-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+}
+
+.legal-header h1 {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: var(--text-primary);
+  line-height: 1.05;
+}
+
+.legal-meta {
+  margin: 0;
+  font-size: 0.83rem;
+  color: var(--text-tertiary);
+}
+
+/* Body content */
+.legal-body {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  padding: 2rem 2.25rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.legal-body > p,
+.legal-body > ul,
+.legal-body > ol {
+  margin: 0 0 1.2rem;
+  font-size: 0.925rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.legal-body h2 {
+  margin: 2rem 0 0.6rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.2px;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.legal-body h2:first-of-type {
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.legal-body h3 {
+  margin: 1.25rem 0 0.4rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.legal-body ul,
+.legal-body ol {
+  padding-left: 1.5rem;
+}
+
+.legal-body li {
+  margin-bottom: 0.4rem;
+  font-size: 0.925rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+.legal-body strong { color: var(--text-primary); font-weight: 600; }
+
+.legal-body a {
+  color: var(--accent-light);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(59, 130, 246, 0.35);
+  transition: text-decoration-color 120ms;
+}
+
+.legal-body a:hover {
+  text-decoration-color: var(--accent-light);
+}
+
+.legal-body code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.82em;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  padding: 0.15em 0.4em;
+  border-radius: 5px;
+  color: var(--accent-light);
+}
+
+/* Cookie table */
+.cookie-table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.cookie-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 560px;
+  font-size: 0.85rem;
+}
+
+.cookie-table th {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-tertiary);
+  background: rgba(255, 255, 255, 0.025);
+  border-bottom: 1px solid var(--border);
+}
+
+.cookie-table td {
+  padding: 0.7rem 0.85rem;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.cookie-table tr:last-child td { border-bottom: none; }
+
+/* Footer links */
+.legal-footer {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.legal-footer a {
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  transition: color 120ms;
+}
+
+.legal-footer a:hover { color: var(--text-primary); }
+
+@media (max-width: 640px) {
+  .legal-body {
+    padding: 1.25rem 1rem;
+  }
+}

@@ -1,0 +1,334 @@
+/* ─────────────────────────────────────────────
+   Team Page
+   ───────────────────────────────────────────── */
+
+.team-page {
+  padding: 1.5rem;
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+  max-width: 800px;
+}
+
+/* ── Banners ── */
+.team-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+}
+
+.team-banner-success {
+  background: var(--success-subtle);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+.team-banner-warn {
+  background: var(--warning-subtle);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  color: var(--warning);
+}
+
+.team-banner a {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.team-banner-close {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.6;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* ── Role legend ── */
+.team-roles-legend {
+  display: flex;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.team-role-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.9rem 1.1rem;
+  border-right: 1px solid var(--border);
+}
+
+.team-role-item:last-child { border-right: none; }
+
+.team-role-desc {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+}
+
+/* ── Role badges ── */
+.team-role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  width: fit-content;
+}
+
+.team-role-admin {
+  background: rgba(37, 99, 235, 0.15);
+  color: var(--accent-light);
+  border: 1px solid rgba(37, 99, 235, 0.3);
+}
+
+.team-role-vp {
+  background: rgba(167, 139, 250, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(167, 139, 250, 0.3);
+}
+
+.team-role-employee {
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+/* ── Members list ── */
+.team-list {
+  overflow: hidden;
+  padding: 0;
+}
+
+.team-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.team-list-head h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.team-seat-pill {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+}
+
+.team-member {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 120ms;
+}
+
+.team-member:last-child { border-bottom: none; }
+.team-member:hover { background: var(--bg-hover); }
+
+.team-member-inactive { opacity: 0.45; }
+
+.team-member-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.team-member-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.team-member-email {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-member-meta {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.1rem;
+}
+
+.team-member-removed {
+  color: var(--danger);
+}
+
+.team-member-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.team-role-select {
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: rgba(4, 7, 15, 0.6);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  width: auto;
+  cursor: pointer;
+}
+
+/* ── Invite modal ── */
+.team-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  animation: fadeIn 160ms ease;
+}
+
+.team-modal {
+  width: 100%;
+  max-width: 480px;
+  padding: 1.75rem;
+  display: grid;
+  gap: 1.25rem;
+  animation: fadeUp 200ms ease;
+}
+
+.team-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.team-modal-head h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.team-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: var(--radius-xs);
+  transition: color 120ms, background 120ms;
+}
+
+.team-modal-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.team-modal-desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.team-invite-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.team-role-options {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.team-role-option {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 140ms, background 140ms;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+.team-role-option input { display: none; }
+
+.team-role-option.selected {
+  border-color: var(--border-accent);
+  background: var(--accent-subtle);
+}
+
+.team-role-option-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.team-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.team-cancel-btn {
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 140ms;
+}
+
+.team-cancel-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .team-page { padding: 1rem; }
+  .team-roles-legend { flex-direction: column; }
+  .team-role-item { border-right: none; border-bottom: 1px solid var(--border); }
+  .team-member { flex-wrap: wrap; }
+  .team-member-actions { width: 100%; }
+}

@@ -1,11 +1,11 @@
-import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
+import type { Session } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authOptions } from './auth'
 import { logEvent } from './polarisLogger'
 
 export async function requireSession() {
-  const session = await getServerSession(authOptions)
-
+  const session: Session | null = await getServerSession(authOptions as never)
 
   if (!session?.user?.id || !session.user.companyId) {
     // Logging must fail safely and never block requests.
@@ -37,6 +37,3 @@ export async function requireSession() {
 
   return { session, error: null }
 }
-
-
-

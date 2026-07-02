@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
+import type { Session } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 
 // PATCH /api/team/[memberId]/role — change role
 export async function PATCH(request: Request, { params }: { params: Promise<{ memberId: string }> }) {
-  const session = await getServerSession(authOptions)
+  const session: Session | null = await getServerSession(authOptions as never)
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -28,7 +29,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ me
 
 // DELETE /api/team/[memberId] — deactivate member
 export async function DELETE(_request: Request, { params }: { params: Promise<{ memberId: string }> }) {
-  const session = await getServerSession(authOptions)
+  const session: Session | null = await getServerSession(authOptions as never)
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

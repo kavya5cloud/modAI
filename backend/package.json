@@ -7,7 +7,7 @@
     "dev:local": "sh -c \"ulimit -n 10240 && next dev\"",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1058.0",

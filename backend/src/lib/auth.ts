@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs'
-import type { NextAuthOptions } from 'next-auth'
+import type { Session } from 'next-auth'
 import type { JWT } from 'next-auth/jwt'
-import NextAuth from 'next-auth'
+import NextAuth from 'next-auth/next'
 import Credentials from 'next-auth/providers/credentials'
 import { db } from './db'
 import { env } from './env'
@@ -25,6 +25,7 @@ type AuthUser = {
 
 type AppJWT = JWT & {
   userId?: string
+  email?: string
   companyId?: string
   companyName?: string
   role?: 'admin' | 'vp' | 'employee'
@@ -54,9 +55,9 @@ async function checkLoginRateLimit(email: string): Promise<boolean> {
   }
 }
 
-export const authOptions: NextAuthOptions = {
+export const authOptions = {
   debug: false,
-  session: { strategy: 'jwt' },
+  session: { strategy: 'jwt' as const },
   secret: env.AUTH_SECRET,
 
   useSecureCookies: isProd,
@@ -201,7 +202,7 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    jwt: async ({ token, user }) => {
+    jwt: async ({ token, user }: { token: JWT; user?: AuthUser | null }) => {
       const appToken = token as AppJWT
       if (user) {
         const authUser = user as unknown as AuthUser
@@ -219,7 +220,7 @@ export const authOptions: NextAuthOptions = {
       }
       return appToken
     },
-    session: async ({ session, token }) => {
+    session: async ({ session, token }: { session: Session; token: JWT }) => {
       const appToken = token as AppJWT
 
       if (appToken.userId && appToken.companyId) {
@@ -243,6 +244,6 @@ export const authOptions: NextAuthOptions = {
   },
 }
 
-const authHandler = NextAuth(authOptions)
+const authHandler = NextAuth(authOptions as never)
 export { authHandler }
 export default authHandler

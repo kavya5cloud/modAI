@@ -1,12 +1,12 @@
 import type { CompanyProfile, CompanySettings } from '../types'
 
-// In dev we rely on Vite proxy + same-origin relative URLs to avoid CORS.
-const BASE = import.meta.env.DEV ? '' : (import.meta.env.VITE_BACKEND_BASE_URL ?? '')
-
-if (import.meta.env.PROD && !BASE) {
-  // Fail fast in production so missing envs are obvious (instead of silently calling wrong origin).
-  console.error('[api][config] VITE_BACKEND_BASE_URL is missing/empty. API calls will fail or hit wrong origin.')
-}
+// The frontend always talks to the backend same-origin via relative /api paths:
+//   - Dev:  Vite proxy forwards /api -> backend (vite.config.ts)
+//   - Prod: Vercel rewrite forwards /api -> backend (vercel.json)
+// Same-origin keeps NextAuth cookies same-site, so the csrf -> callback ->
+// session handshake works without CORS or SameSite=None (which browsers'
+// third-party-cookie blocking would otherwise break).
+const BASE = ''
 
 
 
@@ -148,7 +148,7 @@ export async function signOutSession() {
   const form = new URLSearchParams()
   form.set('csrfToken', csrf.csrfToken)
   form.set('json', 'true')
-  await fetch(`${import.meta.env.DEV ? '' : BASE}/api/auth/signout`, {
+  await fetch(`${BASE}/api/auth/signout`, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

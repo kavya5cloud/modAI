@@ -133,11 +133,13 @@ export async function authWithCredentials(payload: {
 }
 
 export async function getSessionUser() {
-  const session = await request<{ user?: SessionUser }>('/api/auth/session', {
+  // NextAuth's /api/auth/session returns JSON `null` (not `{}`) when there is no
+  // session, so `session` can legitimately be null — guard before reading .user.
+  const session = await request<{ user?: SessionUser } | null>('/api/auth/session', {
     method: 'GET',
     headers: {},
   })
-  return session.user ?? null
+  return session?.user ?? null
 }
 
 export async function signOutSession() {

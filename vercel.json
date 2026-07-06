@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://pegasuslab-jeia.onrender.com/api/:path*"
+      "destination": "https://modai-0ftq.onrender.com/api/:path*"
     },
     {
       "source": "/((?!.*\\.).*)",

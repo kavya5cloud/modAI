@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Ping backend health endpoint
         run: |
-          URL="https://pegasuslab-jeia.onrender.com/api/health"
+          URL="https://modai-0ftq.onrender.com/api/health"
           # Retry to cover a cold start (first hit can take up to ~60s to wake).
           for attempt in 1 2 3 4 5; do
             code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 "$URL" || echo "000")

@@ -1,0 +1,40 @@
+name: Keep backend warm
+
+# Render's free tier spins the service down after ~15 min of inactivity, so the
+# next request (e.g. a login) waits 30-60s for a cold boot. Pinging the health
+# endpoint every 10 minutes keeps the service (and the Neon database) warm so
+# users never hit that cold start.
+#
+# NOTE ON COST: on a PUBLIC repo, GitHub Actions minutes are free. On a PRIVATE
+# repo this runs ~144 times/day and will consume your Actions minutes budget
+# (~2000 free/month) — in that case, either widen the interval, make the repo
+# public, or use an external pinger (e.g. cron-job.org / UptimeRobot).
+
+on:
+  schedule:
+    - cron: '*/10 * * * *' # every 10 minutes
+  workflow_dispatch: {} # allow manual runs
+
+concurrency:
+  group: keepalive
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        run: |
+          URL="https://pegasuslab-jeia.onrender.com/api/health"
+          # Retry to cover a cold start (first hit can take up to ~60s to wake).
+          for attempt in 1 2 3 4 5; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 "$URL" || echo "000")
+            echo "attempt $attempt: HTTP $code"
+            if [ "$code" = "200" ]; then
+              echo "backend is warm"
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "::error::backend did not return 200 after retries ($URL)"
+          exit 1

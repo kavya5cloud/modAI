@@ -33,18 +33,20 @@ export async function rateLimitFixedWindow(params: {
   const windowStart = new Date(windowStartMs)
   const resetAt = new Date(windowStartMs + windowMs)
 
-  // Best-effort prune (single function call). Optional; keep cheap.
-
-  // If prune function doesn't exist for some reason, we tolerate the error.
-
-  try {
-    await db.query(
-      'SELECT prune_rate_limit_counters($1)',
-      // Keep last ~30 windows per key (~30 * windowSeconds of retention)
-      [30],
-    )
-  } catch {
-    // ignore
+  // Best-effort prune. This is pure maintenance, so we DON'T run it on every
+  // call — doing so added a full DB round-trip to every login. Run it on a
+  // small fraction of calls (~3%); over many requests the cleanup still happens
+  // regularly, but the hot path (e.g. sign-in) skips the extra round-trip.
+  if (Math.random() < 0.03) {
+    try {
+      await db.query(
+        'SELECT prune_rate_limit_counters($1)',
+        // Keep last ~30 windows per key (~30 * windowSeconds of retention)
+        [30],
+      )
+    } catch {
+      // ignore
+    }
   }
 
   // Atomically upsert

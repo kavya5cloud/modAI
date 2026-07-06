@@ -13,7 +13,17 @@ const schema = z.object({
     : z.string().default(''),
   OLLAMA_BASE_URL: z.url().default('http://127.0.0.1:11434'),
   OLLAMA_CHAT_MODEL: z.string().default('auto'),
-  EMBEDDING_MODEL: z.string().default('BAAI/bge-small-en-v1.5'),
+  // Must be a transformers.js-compatible (ONNX) model id. The original
+  // BAAI/bge-small-en-v1.5 repo has no ONNX weights, so transformers.js cannot
+  // download it; the Xenova conversion is the same model (384-dim vectors).
+  EMBEDDING_MODEL: z.string().default('Xenova/bge-small-en-v1.5'),
+  // Allow transformers.js to fetch the embedding model from the hub when it is
+  // not already in the local cache. Defaults to true so a fresh deploy works;
+  // set to 'false' only if the model is guaranteed to be pre-bundled on disk.
+  EMBEDDINGS_ALLOW_REMOTE: z
+    .string()
+    .default('true')
+    .transform((value) => value !== 'false'),
   R2_ACCOUNT_ID: z.string().default(''),
   R2_ACCESS_KEY_ID: z.string().default(''),
   R2_SECRET_ACCESS_KEY: z.string().default(''),
@@ -29,6 +39,7 @@ export const env = schema.parse({
   OLLAMA_BASE_URL: process.env.OLLAMA_BASE_URL,
   OLLAMA_CHAT_MODEL: process.env.OLLAMA_CHAT_MODEL,
   EMBEDDING_MODEL: process.env.EMBEDDING_MODEL,
+  EMBEDDINGS_ALLOW_REMOTE: process.env.EMBEDDINGS_ALLOW_REMOTE,
   R2_ACCOUNT_ID: process.env.R2_ACCOUNT_ID,
   R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
   R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,

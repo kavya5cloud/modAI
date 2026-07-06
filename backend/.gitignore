@@ -27,3 +27,6 @@ yarn-error.log*
 # local storage / uploads
 /uploads
 /.uploads
+
+# transformers.js model cache (populated at build time)
+/.cache

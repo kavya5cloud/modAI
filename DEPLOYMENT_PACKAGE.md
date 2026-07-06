@@ -23,7 +23,7 @@ Create environment variables required by `backend/src/lib/env.ts`:
 | `DATABASE_URL` | Neon Postgres connection string |
 | `OLLAMA_BASE_URL` | Ollama server base URL (e.g. `http://localhost:11434`) |
 | `OLLAMA_CHAT_MODEL` | Ollama chat model selector (e.g. `auto` or specific model identifier) |
-| `EMBEDDING_MODEL` | Xenova embedding model id (e.g. `BAAI/bge-small-en-v1.5`) |
+| `EMBEDDING_MODEL` | transformers.js (ONNX) model id (e.g. `Xenova/bge-small-en-v1.5`) |
 | `R2_ACCOUNT_ID` | Cloudflare R2 account id |
 | `R2_ACCESS_KEY_ID` | Cloudflare R2 access key |
 | `R2_SECRET_ACCESS_KEY` | Cloudflare R2 secret key |

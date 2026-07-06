@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "dev:local": "sh -c \"ulimit -n 10240 && next dev\"",
-    "build": "next build",
+    "prefetch:model": "node scripts/prefetch-embedding-model.mjs",
+    "build": "node scripts/prefetch-embedding-model.mjs && next build",
     "start": "next start",
     "lint": "eslint ."
   },

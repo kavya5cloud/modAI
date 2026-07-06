@@ -9,7 +9,12 @@ type FeatureExtractor = (text: string, options?: Record<string, unknown>) => Pro
 const transformersCacheDir = path.join(process.cwd(), '.cache', 'transformers')
 
 transformersEnv.cacheDir = transformersCacheDir
-transformersEnv.allowRemoteModels = false
+// Prefer the on-disk cache (populated by the build-time prefetch script), but
+// fall back to fetching from the hub when the cache is empty. Hard-disabling
+// remote models with no cached copy made embeddings impossible on fresh
+// deploys (document ingestion and chat retrieval both failed).
+transformersEnv.allowLocalModels = true
+transformersEnv.allowRemoteModels = env.EMBEDDINGS_ALLOW_REMOTE
 
 const originalFetch = globalThis.fetch.bind(globalThis)
 

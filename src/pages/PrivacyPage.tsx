@@ -71,7 +71,7 @@ export function PrivacyPage() {
           <ul>
             <li><strong>Neon (database):</strong> encrypted PostgreSQL storage for all application data.</li>
             <li><strong>Cloudflare R2 (optional):</strong> object storage for uploaded files when enabled.</li>
-            <li><strong>Ollama (LLM inference):</strong> runs locally on your server; no data leaves your network.</li>
+            <li><strong>Private AI (LLM inference):</strong> runs locally on your server; no data leaves your network.</li>
           </ul>
           <p>
             A full sub-processor list is available on request at{' '}

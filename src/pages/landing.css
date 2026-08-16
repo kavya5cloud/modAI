@@ -305,3 +305,13 @@
   .lp-display { font-size: clamp(3rem, 15vw, 4.8rem); }
   .lp-row-2 { padding-left: clamp(2.2rem, 10vw, 3.5rem); }
 }
+
+
+/* Second display row sits inset from the first */
+.lp-display-indent {
+  margin-left: clamp(1.5rem, 8vw, 7rem);
+}
+
+@media (max-width: 600px) {
+  .lp-display-indent { margin-left: clamp(0.75rem, 6vw, 2rem); }
+}

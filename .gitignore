@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local upload storage + downloaded embedding model cache
+backend/uploads
+backend/backend
+.cache

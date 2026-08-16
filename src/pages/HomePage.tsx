@@ -1,85 +1,57 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { HowItWorks } from '../components/HowItWorks'
+import { LiquidBackground } from '../components/LiquidBackground'
+import { HeroChat } from '../components/HeroChat'
 import './home.css'
 
 const PLANS = [
   {
-    id: 'starter', name: 'Starter', price: 5, color: '#60a5fa',
+    id: 'starter', name: 'Starter', price: 5,
     seats: '2 seats', tokens: '50k tokens/hr',
-    features: ['2 seats', 'PDF / DOCX / TXT ingestion', 'RAG AI chat', 'Open + Internal docs', 'Offline Ollama'],
+    features: ['2 seats', 'PDF / DOCX / TXT ingestion', 'RAG AI chat', 'Open + Internal docs', 'Private AI — offline'],
     highlight: false,
   },
   {
-    id: 'team', name: 'Team', price: 20, color: '#a78bfa',
+    id: 'team', name: 'Team', price: 20,
     seats: '10 seats', tokens: '150k tokens/hr',
-    features: ['10 seats', 'All visibility levels', 'VP & role-based access', 'Employee invites', 'Cloud Ollama add-on'],
+    features: ['10 seats', 'All visibility levels', 'VP & role-based access', 'Employee invites', 'Private AI cloud add-on'],
     highlight: true,
   },
   {
-    id: 'business', name: 'Business', price: 60, color: '#f472b6',
+    id: 'business', name: 'Business', price: 60,
     seats: '50 seats', tokens: '500k tokens/hr',
-    features: ['50 seats', 'Dedicated Ollama instance', 'Confidential doc vault', '500k tokens/hr', 'Priority support'],
+    features: ['50 seats', 'Dedicated Private AI instance', 'Confidential doc vault', '500k tokens/hr', 'Priority support'],
     highlight: false,
   },
   {
-    id: 'enterprise', name: 'Enterprise', price: null, color: '#34d399',
+    id: 'enterprise', name: 'Enterprise', price: null,
     seats: 'Unlimited', tokens: 'Custom',
-    features: ['Unlimited seats', 'Custom token limits', 'SSO / SAML', 'On-prem Ollama', 'Dedicated SLA'],
+    features: ['Unlimited seats', 'Custom token limits', 'SSO / SAML', 'On-prem Private AI', 'Dedicated SLA'],
     highlight: false,
   },
 ]
 
 const FEATURES = [
-  { title: 'RAG-Powered Answers', desc: 'Polaris retrieves the most relevant chunks from your documents and feeds them to Ollama — grounded answers, every time.' },
+  { title: 'RAG-Powered Answers', desc: 'Polaris retrieves the most relevant chunks from your documents and feeds them to Private AI — grounded answers, every time.' },
   { title: 'Role-Based Access', desc: 'Open, Internal, Confidential. Access is enforced at retrieval — employees only see what their role allows.' },
-  { title: 'Your Own Ollama', desc: 'Every company gets a dedicated Ollama instance. Run it offline or host it in the cloud — you own your model.' },
+  { title: 'Your Own Private AI', desc: 'Every company gets a dedicated Private AI instance. Run it offline or host it in the cloud — you own your model.' },
   { title: 'Document Ingestion', desc: 'Upload PDFs, DOCX, and TXT. Polaris chunks, embeds, and indexes them in seconds.' },
   { title: 'Team Management', desc: 'One admin per company. Invite employees, assign VP and Employee roles, control document access.' },
   { title: 'Token Quotas', desc: 'Hourly token budgets per plan. Upgrade instantly from the Billing page — no infra changes needed.' },
 ]
 
-const STEPS = [
-  { n: '01', title: 'Admin registers', desc: 'Sign up with your work email and company name. You become the billing admin.' },
-  { n: '02', title: 'Pick a plan', desc: 'Choose based on your team size. Payment is per company — not per seat.' },
-  { n: '03', title: 'Upload knowledge', desc: 'Drag in PDFs, DOCX, or text files. Polaris indexes everything automatically.' },
-  { n: '04', title: 'Invite your team', desc: 'Send invite links. Employees set their role and department, which determines what they can access.' },
-]
+type ModeId = 'ask' | 'find'
 
-const CHIPS = [
-  { label: 'Summarize a document', icon: (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>) },
-  { label: 'Find a policy', icon: (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>) },
-  { label: 'Draft from sources', icon: (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg>) },
-]
-
-/* Deterministic indigo pixel-mosaic — brighter toward the focal point, subtle per-cell jitter */
-function buildMosaic(cols: number, rows: number) {
-  const fx = 0.5, fy = 0.5
-  const fract = (n: number) => n - Math.floor(n)
-  const hash = (x: number, y: number) => fract(Math.sin(x * 127.1 + y * 311.7) * 43758.5453)
-  const cells: string[] = []
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const nx = cols === 1 ? 0 : c / (cols - 1)
-      const ny = rows === 1 ? 0 : r / (rows - 1)
-      const dist = Math.min(1, Math.hypot(nx - fx, ny - fy) / 0.62)
-      const jitter = (hash(c, r) - 0.5) * 0.26
-      const t = Math.max(0, Math.min(1, 1 - dist + jitter))
-      const light = 11 + t * 44
-      const sat = 56 + t * 22
-      const hue = 255 + (hash(r, c) - 0.5) * 12
-      cells.push(`hsl(${hue.toFixed(0)} ${sat.toFixed(0)}% ${light.toFixed(0)}%)`)
-    }
-  }
-  return cells
-}
+const STACK = ['PDF', 'DOCX', 'TXT', 'Private AI', 'pgvector', 'Neon Postgres', 'RAG retrieval', 'Role-based access']
 
 export function HomePage() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [query, setQuery] = useState('')
+  const [mode, setMode] = useState<ModeId>('ask')
   const navigate = useNavigate()
 
-  const mosaic = useMemo(() => buildMosaic(40, 24), [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -99,20 +71,23 @@ export function HomePage() {
       {/* ── Nav ── */}
       <header className={`home-nav-bar${scrolled ? ' scrolled' : ''}`}>
         <nav className="home-nav-inner">
-          <a href="#top" className="home-logo">
-            <span className="home-logo-dot" />
-            modAI
+          <a href="#top" className="home-logo" aria-label="modAI home">
+            <img src="/modai-logo.png" alt="modAI" className="home-logo-img" />
+            <span className="home-logo-chip">Polaris</span>
+            <span className="home-logo-chip accent">private preview</span>
           </a>
 
           <div className={`home-nav-links${mobileOpen ? ' open' : ''}`}>
             <a href="#product"  onClick={() => setMobileOpen(false)}>Product</a>
+            <Link to="/solutions" onClick={() => setMobileOpen(false)}>Solutions</Link>
             <a href="#features" onClick={() => setMobileOpen(false)}>Features</a>
-            <a href="#pricing"  onClick={() => setMobileOpen(false)}>Pricing</a>
             <a href="#steps"    onClick={() => setMobileOpen(false)}>How it works</a>
+            <a href="#pricing"  onClick={() => setMobileOpen(false)}>Pricing</a>
           </div>
 
           <div className="home-nav-actions">
-            <Link to="/auth" className="home-signin-dark">Sign in</Link>
+            <a href="#contact" className="home-btn-white">Talk to sales</a>
+            <Link to="/auth" className="home-btn-blue">Sign up for free</Link>
           </div>
 
           <button className="home-burger" onClick={() => setMobileOpen(v => !v)} aria-label="Menu">
@@ -123,45 +98,68 @@ export function HomePage() {
 
       {/* ── Hero ── */}
       <section className="home-hero" id="top">
-        <div
-          className="home-mosaic"
-          aria-hidden="true"
-          style={{ gridTemplateColumns: 'repeat(40, 1fr)', gridTemplateRows: 'repeat(24, 1fr)' }}
-        >
-          {mosaic.map((bg, i) => (
-            <span key={i} style={{ background: bg }} />
-          ))}
-        </div>
-        <div className="home-hero-veil" aria-hidden="true" />
+        <div className="home-hero-gradient" aria-hidden="true" />
+        <LiquidBackground />
+        <div className="home-hero-grid" aria-hidden="true" />
+        <div className="home-hero-grain" aria-hidden="true" />
 
         <div className="home-hero-inner">
-          <h1 className="home-h1">
-            The future of private AI,<br />
-            built for your company.
-          </h1>
+          <div className="home-hero-copy">
+            <span className="home-hero-eyebrow">Private AI for your company</span>
 
-          <form className="home-ask" onSubmit={handleAsk}>
-            <input
-              className="home-ask-input"
-              placeholder="Ask anything across your company's knowledge"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              aria-label="Ask Polaris"
-            />
-            <button type="submit" className="home-ask-btn" aria-label="Ask Polaris">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
-          </form>
+            <h1 className="home-h1">
+              Answer anything about your company with <em>Private AI</em>
+            </h1>
 
-          <div className="home-ask-chips">
-            {CHIPS.map((chip) => (
-              <button key={chip.label} className="home-chip" onClick={() => navigate('/auth')}>
-                {chip.icon}
-                {chip.label}
-              </button>
-            ))}
-            <Link to="/auth" className="home-chip home-chip-more">More</Link>
+            <p className="home-hero-sub">
+              Polaris reads your documents and answers in context — grounded, cited,
+              and running on a model your company owns.
+            </p>
+            <p className="home-hero-sub">
+              Every capability stays inside your boundary: ingestion, retrieval,
+              role-based access, and the model itself.
+            </p>
+
+            <div className="home-hero-actions">
+              <Link to="/auth" className="home-pill home-pill-solid">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                Start free
+              </Link>
+              <a href="#steps" className="home-pill">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+                How it works
+              </a>
+              <a href="#pricing" className="home-pill">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg>
+                Pricing
+              </a>
+              <a href="#contact" className="home-pill">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
+                Talk to sales
+              </a>
+            </div>
           </div>
+
+          <div className="home-hero-panel">
+            <HeroChat
+              threadId={mode}
+              onThreadChange={(id) => setMode(id as ModeId)}
+              draft={query}
+              onDraftChange={setQuery}
+              onSubmit={handleAsk}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Supported stack strip ── */}
+      <section className="home-strip" aria-label="Supported formats and stack">
+        <div className="home-strip-track">
+          {[...STACK, ...STACK].map((item, i) => (
+            <span className="home-strip-item" key={`${item}-${i}`} aria-hidden={i >= STACK.length}>
+              {item}
+            </span>
+          ))}
         </div>
       </section>
 
@@ -181,7 +179,7 @@ export function HomePage() {
             <div className="home-stats">
               <div className="home-stat"><strong>100%</strong><span>Private data</span></div>
               <div className="home-stat"><strong>0</strong><span>Data shared externally</span></div>
-              <div className="home-stat"><strong>1</strong><span>Ollama per company</span></div>
+              <div className="home-stat"><strong>1</strong><span>Your own private AI per company</span></div>
             </div>
             <p className="home-stat-quote">"Every byte of your company's knowledge stays inside your boundary."</p>
           </div>
@@ -203,25 +201,25 @@ export function HomePage() {
 
           <div className="home-pillars">
             <div className="home-pillar">
-              <div className="home-pillar-icon" style={{ '--c': '#60a5fa' } as React.CSSProperties}>
+              <div className="home-pillar-icon" style={{ '--c': '#1d3ec7' } as React.CSSProperties}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
               </div>
               <h3>Document Intelligence</h3>
               <p>Upload PDFs, DOCX, TXT. Polaris chunks, embeds, and indexes everything. Ask — it finds the answer inside your files.</p>
             </div>
             <div className="home-pillar">
-              <div className="home-pillar-icon" style={{ '--c': '#a78bfa' } as React.CSSProperties}>
+              <div className="home-pillar-icon" style={{ '--c': '#2a56d8' } as React.CSSProperties}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               </div>
               <h3>Role-Scoped Access</h3>
               <p>Mark documents Open, Internal, or Confidential. The AI enforces this at retrieval — no junior employee ever sees a confidential doc.</p>
             </div>
             <div className="home-pillar">
-              <div className="home-pillar-icon" style={{ '--c': '#f472b6' } as React.CSSProperties}>
+              <div className="home-pillar-icon" style={{ '--c': '#4479e8' } as React.CSSProperties}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M12 2v6M8 2h8"/><circle cx="9" cy="14" r="1" fill="currentColor"/><circle cx="15" cy="14" r="1" fill="currentColor"/></svg>
               </div>
-              <h3>Your Private Ollama</h3>
-              <p>Every company gets a dedicated Ollama. Run offline on your device or host a cloud instance. Your model, your data, your control.</p>
+              <h3>Your Own Private AI</h3>
+              <p>Every company gets a dedicated model instance. Run it offline or hosted — your model, your data, your control.</p>
             </div>
           </div>
         </div>
@@ -244,25 +242,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* ── How it works ── */}
-      <section className="home-section home-section-alt" id="steps">
-        <div className="home-section-wrap">
-          <span className="home-eyebrow home-eyebrow-center">Setup in minutes</span>
-          <h2 className="home-section-title">From signup to AI-powered team.</h2>
-          <div className="home-steps">
-            {STEPS.map((s, i) => (
-              <div key={s.n} className="home-step">
-                <div className="home-step-num">{s.n}</div>
-                {i < STEPS.length - 1 && <div className="home-step-connector" aria-hidden="true" />}
-                <div className="home-step-body">
-                  <h3>{s.title}</h3>
-                  <p>{s.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HowItWorks />
 
       {/* ── Pricing ── */}
       <section className="home-section" id="pricing">
@@ -275,7 +255,7 @@ export function HomePage() {
             {PLANS.map(p => (
               <div key={p.id} className={`home-plan${p.highlight ? ' home-plan-hi' : ''}`}>
                 {p.highlight && <div className="home-plan-badge">Most popular</div>}
-                <span className="home-plan-name" style={{ color: p.color }}>{p.name}</span>
+                <span className="home-plan-name">{p.name}</span>
                 <div className="home-plan-price">
                   {p.price !== null
                     ? <><span className="home-plan-amt">${p.price}</span><span className="home-plan-per">/mo</span></>
@@ -285,12 +265,12 @@ export function HomePage() {
                 <ul className="home-plan-list">
                   {p.features.map(f => (
                     <li key={f}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={p.color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="home-plan-tick"><path d="M20 6L9 17l-5-5"/></svg>
                       {f}
                     </li>
                   ))}
                 </ul>
-                <Link to="/auth" className="home-plan-btn" style={p.highlight ? { background: `linear-gradient(135deg,${p.color}cc,${p.color}66)`, border: 'none' } : {}}>
+                <Link to="/auth" className={p.highlight ? 'home-plan-btn home-plan-btn-hi' : 'home-plan-btn'}>
                   {p.price === null ? 'Contact us' : 'Get started'}
                 </Link>
               </div>
@@ -298,8 +278,8 @@ export function HomePage() {
           </div>
 
           <div className="home-billing-note">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-            <span><strong>Admin-only billing.</strong> The admin registers first and picks a plan. Employees are invited and never touch billing. Upgrade or switch Ollama mode from the Billing page inside the dashboard.</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1d3ec7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            <span><strong>Admin-only billing.</strong> The admin registers first and picks a plan. Employees are invited and never touch billing. Upgrade or switch Private AI mode from the Billing page inside the dashboard.</span>
           </div>
         </div>
       </section>
@@ -337,8 +317,7 @@ export function HomePage() {
       <footer className="home-footer">
         <div className="home-footer-inner">
           <div className="home-footer-brand">
-            <span className="home-logo-dot" />
-            <span className="home-footer-name">modAI</span>
+            <img src="/modai-logo.png" alt="modAI" className="home-logo-img" />
             <span className="home-footer-tag">Private AI for teams.</span>
           </div>
           <div className="home-footer-cols">

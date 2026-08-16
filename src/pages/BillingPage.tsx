@@ -13,7 +13,7 @@ const PLANS = [
     tokensPerHr: '50k tokens / hr',
     tokensRaw: 50000,
     ollamaMode: 'Offline (your device)',
-    features: ['1 admin seat', 'Document RAG', 'Open + Internal doc access', '50k tokens/hr', 'Offline Ollama'],
+    features: ['1 admin seat', 'Document RAG', 'Open + Internal doc access', '50k tokens/hr', 'Private AI — offline'],
     color: 'var(--accent-light)',
   },
   {
@@ -25,8 +25,8 @@ const PLANS = [
     tokensPerHr: '150k tokens / hr',
     tokensRaw: 150000,
     ollamaMode: 'Offline or Cloud (+$10/mo)',
-    features: ['10 seats', 'All doc visibility levels', 'VP & role-based access', '150k tokens/hr', 'Invite employees', 'Ollama cloud add-on'],
-    color: '#a78bfa',
+    features: ['10 seats', 'All doc visibility levels', 'VP & role-based access', '150k tokens/hr', 'Invite employees', 'Private AI cloud add-on'],
+    tone: 'base',
     popular: true,
   },
   {
@@ -38,8 +38,8 @@ const PLANS = [
     tokensPerHr: '500k tokens / hr',
     tokensRaw: 500000,
     ollamaMode: 'Dedicated cloud instance',
-    features: ['50 seats', 'Dedicated Ollama instance', 'Confidential doc vault', '500k tokens/hr', 'Priority support', 'Token upgrade available'],
-    color: '#f472b6',
+    features: ['50 seats', 'Dedicated Private AI instance', 'Confidential doc vault', '500k tokens/hr', 'Priority support', 'Token upgrade available'],
+    tone: 'base',
   },
   {
     id: 'enterprise',
@@ -50,8 +50,8 @@ const PLANS = [
     tokensPerHr: 'Custom',
     tokensRaw: 0,
     ollamaMode: 'Dedicated + on-prem option',
-    features: ['Unlimited seats', 'SLA guarantee', 'Custom token limits', 'SSO / SAML', 'On-prem Ollama', 'Dedicated support'],
-    color: '#34d399',
+    features: ['Unlimited seats', 'SLA guarantee', 'Custom token limits', 'SSO / SAML', 'On-prem Private AI', 'Dedicated support'],
+    tone: 'top',
   },
 ]
 
@@ -96,7 +96,7 @@ export function BillingPage() {
       {/* Current plan card */}
       <div className="billing-current-card glass-card">
         <div className="billing-current-left">
-          <span className="billing-badge" style={{ background: `${activePlan.color}22`, color: activePlan.color, border: `1px solid ${activePlan.color}44` }}>
+          <span className="billing-badge">
             {activePlan.name}
           </span>
           <h2 className="billing-current-name">
@@ -111,13 +111,13 @@ export function BillingPage() {
             <span className="billing-usage-nums">{fmt(hourlyUsed)} / {fmt(tokensPerHr)}</span>
           </div>
           <div className="billing-usage-bar">
-            <div className="billing-usage-fill" style={{ width: `${(hourlyUsed / tokensPerHr) * 100}%`, background: activePlan.color }} />
+            <div className="billing-usage-fill" style={{ width: `${Math.min(100, (hourlyUsed / tokensPerHr) * 100)}%` }} />
           </div>
           <p className="billing-usage-hint">Resets every hour. Upgrade to increase your limit.</p>
         </div>
 
         <div className="billing-ollama-mode">
-          <span className="billing-ollama-label">Ollama mode</span>
+          <span className="billing-ollama-label">Private AI mode</span>
           <div className="billing-mode-toggle">
             <button
               className={`billing-mode-btn${ollamaMode === 'offline' ? ' active' : ''}`}
@@ -133,10 +133,10 @@ export function BillingPage() {
             </button>
           </div>
           {ollamaMode === 'offline' && (
-            <p className="billing-mode-desc">Ollama runs on your device. Fast, private, free.</p>
+            <p className="billing-mode-desc">Your Private AI runs on your device. Fast, private, free.</p>
           )}
           {ollamaMode === 'cloud' && (
-            <p className="billing-mode-desc">We host a dedicated Ollama instance for your company. Always on, no setup.</p>
+            <p className="billing-mode-desc">We host a dedicated Private AI instance for your company. Always on, no setup.</p>
           )}
         </div>
       </div>
@@ -155,13 +155,13 @@ export function BillingPage() {
             <div
               key={plan.id}
               className={`billing-plan-card glass-card${plan.popular ? ' billing-plan-popular' : ''}${isCurrent ? ' billing-plan-current' : ''}`}
-              style={plan.popular ? { '--plan-color': plan.color } as React.CSSProperties : {}}
+
             >
               {plan.popular && <div className="billing-popular-badge">Most popular</div>}
               {isCurrent && <div className="billing-current-badge">Current plan</div>}
 
               <div className="billing-plan-top">
-                <span className="billing-plan-name" style={{ color: plan.color }}>{plan.name}</span>
+                <span className="billing-plan-name">{plan.name}</span>
                 <div className="billing-plan-price">
                   {plan.price !== null ? (
                     <><span className="billing-plan-amount">${plan.price}</span><span className="billing-plan-cycle">/mo</span></>
@@ -183,7 +183,7 @@ export function BillingPage() {
 
               <button
                 className={`billing-plan-btn${isCurrent ? ' billing-plan-btn-current' : ''}`}
-                style={!isCurrent ? { background: `linear-gradient(135deg, ${plan.color}cc, ${plan.color}88)` } : {}}
+
                 onClick={() => !isCurrent && handleUpgrade(plan.id)}
                 disabled={isCurrent || (upgrading && isSelected)}
               >

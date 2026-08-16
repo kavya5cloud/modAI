@@ -13,6 +13,7 @@ const profileSchema = z.object({
   departments: z.array(z.string().trim().min(1).max(120)).optional(),
   products: z.array(z.string().trim().min(1).max(120)).optional(),
   goals: z.array(z.string().trim().min(1).max(120)).optional(),
+  logoUrl: z.string().trim().max(2000).nullable().optional(),
 })
 
 export async function GET(request: Request) {
@@ -68,6 +69,7 @@ export async function POST(request: Request) {
       departments: parsed.data.departments ?? [],
       products: parsed.data.products ?? [],
       goals: parsed.data.goals ?? [],
+      logoUrl: parsed.data.logoUrl ?? null,
     })
 
     log.domainEvent('company_profile_updated', { companyId: session.user.companyId })

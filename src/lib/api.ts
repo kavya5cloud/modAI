@@ -272,8 +272,25 @@ export async function saveCompanyProfile(payload: CompanyProfile) {
       departments: payload.departments,
       products: payload.products,
       goals: payload.goals,
+      logoUrl: (payload as unknown as { logo_url?: string | null }).logo_url ?? null,
     }),
   })
+}
+
+/** Uploads a company logo and returns its public URL. */
+export async function uploadCompanyLogo(file: File) {
+  const body = new FormData()
+  body.append('file', file)
+  const response = await fetch(`${BASE}/api/company/logo`, {
+    method: 'POST',
+    credentials: 'include',
+    body,
+  })
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) {
+    throw new Error(typeof data?.error === 'string' ? data.error : 'Logo upload failed')
+  }
+  return data as { logoUrl: string; key: string }
 }
 
 

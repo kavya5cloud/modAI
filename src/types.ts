@@ -54,6 +54,7 @@ export type CompanySettings = {
 export type CompanyProfile = {
   company_id: string
   company_name: string
+  logo_url?: string | null
   industry: string | null
   employee_count: number | null
   description: string | null

@@ -75,6 +75,13 @@ export const localStorageProvider: StorageProvider = {
 
   },
 
+  async putObject({ key, body }) {
+    await ensureUploadsDir()
+    const target = localObjectPath(key)
+    await fs.mkdir(path.dirname(target), { recursive: true })
+    await fs.writeFile(target, body)
+  },
+
   async readObject({ key }) {
     const filePath = localObjectPath(key)
     const body = await fs.readFile(filePath)

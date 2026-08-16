@@ -19,6 +19,14 @@
   align-items: start;
 }
 
+.billing-current-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
 .billing-badge {
   display: inline-flex;
   padding: 0.3rem 0.75rem;
@@ -82,7 +90,7 @@
   color: var(--text-tertiary);
 }
 
-/* ── Ollama mode toggle ── */
+/* ── Private AI mode toggle ── */
 .billing-ollama-mode {
   display: flex;
   flex-direction: column;
@@ -201,7 +209,9 @@
   top: -11px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  background: rgba(96, 165, 250, 0.16);
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  color: #cfe0ff;
   color: #fff;
   font-size: 0.68rem;
   font-weight: 700;
@@ -217,7 +227,8 @@
   top: -11px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, var(--accent), #4f7cf5);
+  background: #fff;
+  color: #0a0b0f;
   color: #fff;
   font-size: 0.68rem;
   font-weight: 700;
@@ -415,4 +426,54 @@
     grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
   }
+}
+
+
+/* ─────────────────────────────────────────────
+   Billing — single accent, tiers read by emphasis
+   ───────────────────────────────────────────── */
+.billing-badge {
+  background: rgba(96, 165, 250, 0.14);
+  color: #cfe0ff;
+  border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.billing-plan-name {
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.billing-plan.is-popular .billing-plan-name { color: #cfe0ff; }
+
+.billing-usage-fill {
+  background: linear-gradient(90deg, #60a5fa, #34d399);
+  transition: width 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Current plan gets the solid treatment; the rest stay quiet */
+.billing-plan-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-weight: 600;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+.billing-plan-btn:hover:not(:disabled) {
+  background: #fff;
+  border-color: #fff;
+  color: #0a0b0f;
+}
+.billing-plan-btn:disabled { opacity: 0.55; cursor: default; }
+
+.billing-mode-btn.active {
+  background: rgba(96, 165, 250, 0.16);
+  border-color: rgba(96, 165, 250, 0.4);
+  color: #cfe0ff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .billing-usage-fill { transition: none; }
 }

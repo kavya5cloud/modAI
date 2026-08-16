@@ -40,6 +40,12 @@ export const r2StorageProvider: StorageProvider = {
     }
   },
 
+  async putObject({ key, body, contentType }) {
+    const bucket = env.R2_BUCKET
+    if (!bucket) throw new Error('Storage backend is not configured. Set R2_BUCKET.')
+    await r2.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: body, ContentType: contentType }))
+  },
+
   async readObject() {
     throw new Error('R2 readObject not implemented yet (temporary beta)')
   },

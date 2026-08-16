@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
-import { FileText, Trash2, Upload } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { FileText, Trash2, Upload, X } from 'lucide-react'
+import { ToastStack } from '../components/ui'
+import { useToasts } from '../components/useToasts'
 import { deleteDocument, getFiles, uploadDocument } from '../lib/api'
 import { getAuth } from '../lib/storage'
 import type { UserAuth } from '../types'
@@ -50,6 +52,10 @@ export function DocumentsPage() {
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
+  const [dragging, setDragging] = useState(false)
+  const [inFlight, setInFlight] = useState<{ name: string; index: number; total: number } | null>(null)
+  const dragDepth = useRef(0)
+  const { toasts, push, dismiss } = useToasts()
 
   const documentCount = documents.length
   const uploadedCount = useMemo(
@@ -89,18 +95,50 @@ export function DocumentsPage() {
     setUploading(true)
     setError('')
 
+    const total = selectedFiles.length
+    let done = 0
     try {
-      for (const file of selectedFiles) {
+      for (const [index, file] of selectedFiles.entries()) {
+        setInFlight({ name: file.name, index: index + 1, total })
         await uploadDocument(file, uploadVisibility)
+        done += 1
       }
       setSelectedFiles([])
       await loadDocuments()
+      push(total === 1 ? 'Document uploaded and queued for indexing' : `${total} documents uploaded`)
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Upload failed')
+      const message = cause instanceof Error ? cause.message : 'Upload failed'
+      setError(message)
+      push(done ? `${done} of ${total} uploaded — ${message}` : message, 'err')
+      if (done) await loadDocuments()
     } finally {
+      setInFlight(null)
       setUploading(false)
     }
   }
+
+  const acceptFiles = useCallback((incoming: FileList | File[]) => {
+    const allowed = ['pdf', 'docx', 'txt']
+    const picked: File[] = []
+    const rejected: string[] = []
+    for (const file of Array.from(incoming)) {
+      const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
+      if (allowed.includes(ext)) picked.push(file)
+      else rejected.push(file.name)
+    }
+    if (rejected.length) {
+      push(`Skipped ${rejected.length} unsupported file${rejected.length > 1 ? 's' : ''} — PDF, DOCX, TXT only`, 'err')
+    }
+    if (picked.length) {
+      setSelectedFiles((prev) => {
+        const names = new Set(prev.map((f) => f.name + f.size))
+        return [...prev, ...picked.filter((f) => !names.has(f.name + f.size))]
+      })
+    }
+  }, [push])
+
+  const removeSelected = (index: number) =>
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
 
   const handleDelete = async (documentId: string) => {
     const confirmed = window.confirm('Delete this document? This cannot be undone.')
@@ -110,8 +148,11 @@ export function DocumentsPage() {
     try {
       await deleteDocument(documentId)
       setDocuments((current) => current.filter((document) => document.id !== documentId))
+      push('Document deleted')
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Delete failed')
+      const message = cause instanceof Error ? cause.message : 'Delete failed'
+      setError(message)
+      push(message, 'err')
     }
   }
 
@@ -170,33 +211,90 @@ export function DocumentsPage() {
             </div>
           </div>
 
+          <label
+            className={dragging ? 'dropzone is-dragging' : 'dropzone'}
+            onDragEnter={(event) => {
+              event.preventDefault()
+              dragDepth.current += 1
+              setDragging(true)
+            }}
+            onDragOver={(event) => event.preventDefault()}
+            onDragLeave={(event) => {
+              event.preventDefault()
+              dragDepth.current -= 1
+              if (dragDepth.current <= 0) {
+                dragDepth.current = 0
+                setDragging(false)
+              }
+            }}
+            onDrop={(event) => {
+              event.preventDefault()
+              dragDepth.current = 0
+              setDragging(false)
+              acceptFiles(event.dataTransfer.files)
+            }}
+          >
+            <input
+              type="file"
+              multiple
+              accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+              onChange={(event) => {
+                acceptFiles(event.target.files ?? [])
+                event.target.value = ''
+              }}
+            />
+            <span className="dropzone-icon"><Upload size={20} /></span>
+            <span className="dropzone-title">
+              {dragging ? 'Drop to add' : 'Drag files here, or click to browse'}
+            </span>
+            <span className="dropzone-meta">{allowedExtensions.join(' · ')} — up to 25 MB each</span>
+          </label>
+
+          {selectedFiles.length > 0 && (
+            <div className="staged-list">
+              {selectedFiles.map((file, index) => {
+                const active = inFlight?.name === file.name
+                return (
+                  <div className={active ? 'staged-item is-active' : 'staged-item'} key={`${file.name}-${index}`}>
+                    <FileText size={14} />
+                    <span className="staged-name">{file.name}</span>
+                    <span className="staged-size">{bytesToLabel(file.size)}</span>
+                    {uploading ? (
+                      active ? <span className="staged-state">Uploading…</span> : null
+                    ) : (
+                      <button
+                        type="button"
+                        className="staged-remove"
+                        onClick={() => removeSelected(index)}
+                        aria-label={`Remove ${file.name}`}
+                      >
+                        <X size={13} />
+                      </button>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
           <div className="documents-upload-actions">
-            <label className="documents-picker">
-              <input
-                type="file"
-                multiple
-                accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
-                onChange={(event) => setSelectedFiles(Array.from(event.target.files ?? []))}
-              />
-              <span>Select files</span>
-            </label>
             <button
               type="button"
               className="pill-button"
               onClick={handleUpload}
               disabled={!selectedFiles.length || uploading}
             >
-              {uploading ? 'Uploading...' : 'Upload now'}
+              {uploading && inFlight
+                ? `Uploading ${inFlight.index} of ${inFlight.total}…`
+                : selectedFiles.length
+                  ? `Upload ${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''}`
+                  : 'Upload'}
             </button>
-          </div>
-
-          <div className="documents-badges">
-            {allowedExtensions.map((extension) => (
-              <span key={extension} className="doc-chip">
-                {extension}
-              </span>
-            ))}
-            <span className="doc-chip subtle">{selectedFiles.length ? `${selectedFiles.length} selected` : 'No files selected'}</span>
+            {selectedFiles.length > 0 && !uploading && (
+              <button type="button" className="ghost-button" onClick={() => setSelectedFiles([])}>
+                Clear
+              </button>
+            )}
           </div>
         </section>
       )}
@@ -250,6 +348,8 @@ export function DocumentsPage() {
       </section>
 
       {error && <p className="error-note">{error}</p>}
+
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }

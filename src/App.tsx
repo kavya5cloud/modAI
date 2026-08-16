@@ -4,6 +4,7 @@ import { DashboardLayout } from './components/DashboardLayout'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { HomePage } from './pages/HomePage'
 import { LandingPage } from './pages/LandingPage'
+import { SolutionsPage } from './pages/SolutionsPage'
 import { AuthPage } from './pages/AuthPage'
 import { InviteAcceptPage } from './pages/InviteAcceptPage'
 import { ChatPage } from './pages/ChatPage'
@@ -26,6 +27,7 @@ function App() {
         {/* Public */}
         <Route path="/" element={<HomePage />} />
         <Route path="/intro" element={<LandingPage />} />
+        <Route path="/solutions" element={<SolutionsPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/invite" element={<InviteAcceptPage />} />
         <Route path="/terms" element={<TermsPage />} />

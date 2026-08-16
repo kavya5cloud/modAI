@@ -46,8 +46,8 @@ export function AuthPage() {
           </Link>
 
           <div className="auth-brand-logo">
-            <div className="auth-brand-dot" aria-hidden="true" />
-            <span>modAI</span>
+            <img src="/modai-logo.png" alt="modAI" className="auth-brand-logo-img" />
+            <span className="auth-brand-chip">Polaris</span>
           </div>
 
           <div className="auth-brand-headline">
@@ -55,7 +55,7 @@ export function AuthPage() {
             <p>
               Polaris ingests your documents, learns your team's structure,
               and answers questions in your company's context — privately,
-              with your own Ollama instance.
+              on a model your company owns.
             </p>
           </div>
 
@@ -67,7 +67,7 @@ export function AuthPage() {
               },
               {
                 icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M12 2v6M8 2h8"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg>,
-                text: 'Dedicated Ollama instance per company',
+                text: 'Your own private AI — a dedicated model per company',
               },
               {
                 icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>,
@@ -86,9 +86,9 @@ export function AuthPage() {
           </ul>
 
           <div className="auth-brand-plans">
-            <span className="auth-plan-chip auth-plan-chip-blue">Starter $5/mo</span>
-            <span className="auth-plan-chip auth-plan-chip-purple">Team $20/mo</span>
-            <span className="auth-plan-chip auth-plan-chip-pink">Business $60/mo</span>
+            <span className="auth-plan-chip">Starter $5/mo</span>
+            <span className="auth-plan-chip">Team $20/mo</span>
+            <span className="auth-plan-chip">Business $60/mo</span>
           </div>
         </div>
       </div>

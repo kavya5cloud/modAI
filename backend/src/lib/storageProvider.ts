@@ -46,6 +46,10 @@ export type StorageProvider = {
   }) => Promise<UploadUrlResponse>
 
 
+  // Writes an object directly (no presign round-trip). Used for small assets
+  // such as company logos, where a two-step upload adds no value.
+  putObject: (args: { key: string; body: Buffer; contentType: string }) => Promise<void>
+
   readObject: (args: StorageReadInput) => Promise<StorageReadResult>
   deleteObject: (args: StorageDeleteInput) => Promise<void>
 

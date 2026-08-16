@@ -1,24 +1,31 @@
 /* ─────────────────────────────────────────────
+   Typeface
+   NOTE: public/fonts/CodecPro-*.ttf are Zetafonts PERSONAL-USE TRIAL files —
+   every digit glyph (0-9) is replaced with a "personal use only" watermark,
+   so they cannot be used here. Outfit is the closest free geometric stand-in.
+   Drop licensed Codec Pro files in and swap the family below to switch.
+   ───────────────────────────────────────────── */
+/* ─────────────────────────────────────────────
    Design Tokens
    ───────────────────────────────────────────── */
 :root {
-  /* Backgrounds */
-  --bg-base:        #04070f;
-  --bg-surface:     rgba(8, 12, 28, 0.45);
-  --bg-elevated:    rgba(12, 18, 40, 0.6);
-  --bg-hover:       rgba(255, 255, 255, 0.055);
-  --bg-active:      rgba(37, 99, 235, 0.2);
+  /* Backgrounds — neutral near-black, not navy. Solid, not hazy. */
+  --bg-base:        #0a0b0f;
+  --bg-surface:     #111318;
+  --bg-elevated:    #171a21;
+  --bg-hover:       rgba(255, 255, 255, 0.05);
+  --bg-active:      rgba(59, 130, 246, 0.16);
 
-  /* Borders */
-  --border:         rgba(255, 255, 255, 0.09);
-  --border-strong:  rgba(255, 255, 255, 0.15);
-  --border-accent:  rgba(99, 155, 255, 0.45);
-  --border-top-glass: rgba(255, 255, 255, 0.18);
+  /* Borders — crisp hairlines */
+  --border:         rgba(255, 255, 255, 0.08);
+  --border-strong:  rgba(255, 255, 255, 0.16);
+  --border-accent:  rgba(96, 165, 250, 0.5);
+  --border-top-glass: rgba(255, 255, 255, 0.14);
 
-  /* Typography */
-  --text-primary:   #eef2ff;
-  --text-secondary: #8a97c4;
-  --text-tertiary:  #4e5a80;
+  /* Typography — brighter secondaries so nothing reads as washed out */
+  --text-primary:   #f6f8fb;
+  --text-secondary: #a6afc0;
+  --text-tertiary:  #737d91;
 
   /* Accent — Electric Blue */
   --accent:         #2563eb;
@@ -69,7 +76,10 @@
 html, body, #root {
   margin: 0; padding: 0;
   width: 100%; min-height: 100vh;
+  min-height: 100dvh;
 }
+
+html { -webkit-text-size-adjust: 100%; }
 
 body {
   color: var(--text-primary);
@@ -77,18 +87,28 @@ body {
   overflow-x: hidden;
 }
 
-/* Fixed background as pseudo — avoids background-attachment:fixed repaint cost */
+img, svg, video, canvas { max-width: 100%; }
+
+/* Visible keyboard focus everywhere, without a ring on mouse clicks */
+:focus-visible {
+  outline: 2px solid var(--accent-light);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Aurora field — soft blue/teal/green light on near-black.
+   Fixed pseudo-element so it never repaints on scroll. */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: -1;
   background-image:
-    radial-gradient(ellipse 80% 60% at 5%   0%,   rgba(37, 99, 235, 0.32)  0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 95%  5%,   rgba(124, 58, 237, 0.26) 0%, transparent 48%),
-    radial-gradient(ellipse 50% 60% at 55%  92%,  rgba(6, 182, 212, 0.15)  0%, transparent 52%),
-    radial-gradient(ellipse 70% 45% at 15%  72%,  rgba(37, 99, 235, 0.12)  0%, transparent 55%),
-    radial-gradient(ellipse 40% 35% at 75%  50%,  rgba(99, 102, 241, 0.08) 0%, transparent 45%);
+    radial-gradient(ellipse 46% 58% at 12% 18%, rgba(37, 110, 255, 0.20) 0%, transparent 62%),
+    radial-gradient(ellipse 38% 48% at 86% 24%, rgba(16, 185, 190, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 54% 40% at 68% 88%, rgba(34, 197, 130, 0.10) 0%, transparent 62%),
+    radial-gradient(ellipse 40% 44% at 32% 82%, rgba(37, 110, 255, 0.10) 0%, transparent 60%);
+  filter: blur(12px);
   pointer-events: none;
 }
 
@@ -230,3 +250,29 @@ label {
 }
 
 .animate-up { animation: fadeUp 260ms ease both; }
+
+/* ─────────────────────────────────────────────
+   Global Responsive Baseline
+   ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  :root { font-size: 14.5px; }
+}
+
+@media (max-width: 480px) {
+  :root { font-size: 14px; }
+}
+
+/* Touch devices get comfortable hit areas and no iOS zoom-on-focus */
+@media (pointer: coarse) {
+  button, a.pill-button, .nav-link { min-height: 40px; }
+  input, textarea, select { font-size: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

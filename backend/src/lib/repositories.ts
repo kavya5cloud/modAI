@@ -275,6 +275,7 @@ export async function upsertCompanyProfile(
     departments: unknown
     products: unknown
     goals: unknown
+    logoUrl?: string | null
   },
 ) {
   await db.query(
@@ -286,15 +287,17 @@ export async function upsertCompanyProfile(
        description,
        departments,
        products,
-       goals
+       goals,
+       logo_url
      )
-     VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8::jsonb)
+     VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8::jsonb, $9)
      ON CONFLICT (company_id)
      DO UPDATE SET
        company_name = EXCLUDED.company_name,
        industry = EXCLUDED.industry,
        employee_count = EXCLUDED.employee_count,
        description = EXCLUDED.description,
+       logo_url = EXCLUDED.logo_url,
        departments = EXCLUDED.departments,
        products = EXCLUDED.products,
        goals = EXCLUDED.goals,
@@ -308,6 +311,7 @@ export async function upsertCompanyProfile(
       JSON.stringify(payload.departments ?? []),
       JSON.stringify(payload.products ?? []),
       JSON.stringify(payload.goals ?? []),
+      payload.logoUrl ?? null,
     ],
   )
 }
